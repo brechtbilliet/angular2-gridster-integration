@@ -9,7 +9,8 @@ import {
     AfterViewInit,
     OnDestroy,
     EventEmitter,
-    Output, ChangeDetectionStrategy, ElementRef
+    Output,
+    ChangeDetectionStrategy
 } from "@angular/core";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
@@ -17,6 +18,7 @@ import "font-awesome/css/font-awesome.css";
 import {NgGridItem, NgGridItemEvent} from "angular2-grid/dist/main";
 import {WidgetConfig} from "../entities/widget.types";
 import {Subject} from "rxjs/Rx";
+import {HasProportions} from "./widget.types";
 @Component({
     selector: "widget",
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +28,6 @@ import {Subject} from "rxjs/Rx";
     <div class="title">{{title}}</div>
     <button class="btn btn-danger" (click)="onRemove()"><i class="fa fa-trash-o"></i></button>
     <button class="btn btn-default"><i class="fa fa-cog"></i></button>
-    width: {{width$|async}}, height: {{height$|async}}
     <div #target></div>
 </div>
 
@@ -45,7 +46,7 @@ export class WidgetComponent implements AfterViewInit, OnDestroy {
 
     cmpRef: ComponentRef<any>;
 
-    constructor(private resolver: ComponentResolver, private elementRef: ElementRef) {
+    constructor(private resolver: ComponentResolver) {
     }
 
     onRemove(): void {
@@ -53,9 +54,10 @@ export class WidgetComponent implements AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit(): void {
-        this.resolver.resolveComponent(this.component).then((factory: ComponentFactory<any>) => {
+        this.resolver.resolveComponent(this.component).then((factory: ComponentFactory<HasProportions>) => {
             this.cmpRef = this.target.createComponent(factory);
-            console.log(this.elementRef.nativeElement.clientWidth);
+            this.cmpRef.instance.width$ = this.width$;
+            this.cmpRef.instance.height$ = this.height$;
         });
     }
 
