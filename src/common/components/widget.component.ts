@@ -10,7 +10,7 @@ import {
     OnDestroy,
     EventEmitter,
     Output,
-    ChangeDetectionStrategy
+    ChangeDetectionStrategy, ChangeDetectorRef
 } from "@angular/core";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.css";
@@ -21,14 +21,23 @@ import {Subject} from "rxjs/Rx";
 import {HasProportions} from "./widget.types";
 @Component({
     selector: "widget",
-    changeDetection: ChangeDetectionStrategy.OnPush,
     directives: [NgGridItem],
+    changeDetection: ChangeDetectionStrategy.Default,
     template: `
-<div [(ngGridItem)]="config" (onChange)="ngGridItemChange$.next($event)" (onChangeStop)="ngGridItemChange$.next($event)" (onItemChange)="ngGridItemChange$.next($event)">
-    <div class="title">{{title}}</div>
-    <button class="btn btn-danger" (click)="onRemove()"><i class="fa fa-trash-o"></i></button>
-    <button class="btn btn-default"><i class="fa fa-cog"></i></button>
-    <div #target></div>
+<div class="box" [(ngGridItem)]="config" (onChange)="ngGridItemChange$.next($event)" 
+    (onChangeStop)="ngGridItemChange$.next($event)" (onItemChange)="ngGridItemChange$.next($event)">
+    <div class="box-header">
+        <h3>{{title}}</h3>
+        <div class="box-header-btns pull-right">
+            <a href="javascript:void(0)" ><i class="fa fa-question"></i></a>
+            <a href="javascript:void(0)"><i class="fa fa-cog"></i></a>
+            <a href="javascript:void(0)" (click)="onRemove()"><i class="fa fa-trash-o"></i></a>
+        </div>
+    </div>
+    <div class="box-content">
+        <div #target></div>
+    </div>
+    
 </div>
 
 `
@@ -40,13 +49,15 @@ export class WidgetComponent implements AfterViewInit, OnDestroy {
     @Input() component: any;
     @Output() remove = new EventEmitter<any>();
 
+    headerHeight = 40;
     ngGridItemChange$ = new Subject();
-    width$ = this.ngGridItemChange$.map((event: NgGridItemEvent) => event.width);
-    height$ = this.ngGridItemChange$.map((event: NgGridItemEvent) => event.height);
+    width$ = this.ngGridItemChange$.map((event: NgGridItemEvent) => event.width).startWith(0);
+    height$ = this.ngGridItemChange$.map((event: NgGridItemEvent) => event.height - this.headerHeight).startWith(0);
 
     cmpRef: ComponentRef<any>;
 
-    constructor(private resolver: ComponentResolver) {
+    constructor(private resolver: ComponentResolver, private ref: ChangeDetectorRef) {
+        this.ref.detach();
     }
 
     onRemove(): void {
@@ -58,6 +69,8 @@ export class WidgetComponent implements AfterViewInit, OnDestroy {
             this.cmpRef = this.target.createComponent(factory);
             this.cmpRef.instance.width$ = this.width$;
             this.cmpRef.instance.height$ = this.height$;
+            this.ref.reattach();
+            this.ref.detectChanges();
         });
     }
 

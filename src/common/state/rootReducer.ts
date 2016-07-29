@@ -13,7 +13,9 @@ const defaultWidgets = [
         id: _.uniqueId(),
         component: KeyperformanceIndexesWidget,
         config: {
-            sizex: 2,
+            col: 1,
+            row: 1,
+            sizex: 1,
             sizey: 1
         }
     },
@@ -22,7 +24,9 @@ const defaultWidgets = [
         id: _.uniqueId(),
         component: KeyperformanceIndexesWidget,
         config: {
-            sizex: 2,
+            col: 1,
+            row: 1,
+            sizex: 1,
             sizey: 1
         }
     },
@@ -31,7 +35,9 @@ const defaultWidgets = [
         id: _.uniqueId(),
         component: KeyperformanceIndexesWidget,
         config: {
-            sizex: 2,
+            col: 1,
+            row: 1,
+            sizex: 1,
             sizey: 1
         }
     },
@@ -40,7 +46,9 @@ const defaultWidgets = [
         id: _.uniqueId(),
         component: KeyperformanceIndexesWidget,
         config: {
-            sizex: 2,
+            col: 1,
+            row: 1,
+            sizex: 1,
             sizey: 1
         }
     }
